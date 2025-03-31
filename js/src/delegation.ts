@@ -3,6 +3,8 @@ import { Delegation, StakeHistoryEntry } from './stake';
 const WARMUP_COOLDOWN_RATE = 0.09;
 
 export interface StakeActivatingAndDeactivating {
+  deactivationEpoch: bigint;
+  activationEpoch: bigint;
   effective: bigint;
   activating: bigint;
   deactivating: bigint;
@@ -109,6 +111,8 @@ export function getStakeActivatingAndDeactivating(
   // then de-activate some portion if necessary
   if (targetEpoch < delegation.deactivationEpoch) {
     return {
+      deactivationEpoch: delegation.deactivationEpoch,
+      activationEpoch: delegation.activationEpoch,
       effective,
       activating,
       deactivating: BigInt(0),
@@ -116,6 +120,8 @@ export function getStakeActivatingAndDeactivating(
   } else if (targetEpoch === delegation.deactivationEpoch) {
     // can only deactivate what's activated
     return {
+      deactivationEpoch: delegation.deactivationEpoch,
+      activationEpoch: delegation.activationEpoch,
       effective,
       activating: BigInt(0),
       deactivating: effective,
@@ -161,12 +167,16 @@ export function getStakeActivatingAndDeactivating(
 
     // deactivating stake should equal to all of currently remaining effective stake
     return {
+      deactivationEpoch: delegation.deactivationEpoch,
+      activationEpoch: delegation.activationEpoch,
       effective: currentEffectiveStake,
       deactivating: currentEffectiveStake,
       activating: BigInt(0),
     };
   } else {
     return {
+      deactivationEpoch: BigInt(0),
+      activationEpoch: BigInt(0),
       effective: BigInt(0),
       activating: BigInt(0),
       deactivating: BigInt(0),
